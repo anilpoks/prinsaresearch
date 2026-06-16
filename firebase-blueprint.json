@@ -1,0 +1,72 @@
+{
+  "entities": {
+    "PatientProfile": {
+      "title": "Patient Registry Profile",
+      "description": "Complete CRF record for a clinical patient in the portal vein study.",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "The unique identifier of the patient record"
+        },
+        "userId": {
+          "type": "string",
+          "description": "The UID of the researcher who recorded this patient"
+        },
+        "isDraft": {
+          "type": "boolean",
+          "description": "Whether this record is a partial draft entry"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Timestamp when the record was created"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Timestamp when the record was last updated"
+        },
+        "demographics": {
+          "type": "object",
+          "description": "Demographic information of the patient"
+        },
+        "cldHistory": {
+          "type": "object",
+          "description": "Chronic Liver Disease history"
+        },
+        "complaints": {
+          "type": "object",
+          "description": "Presenting complaints"
+        },
+        "examination": {
+          "type": "object",
+          "description": "Clinical examination results"
+        },
+        "investigations": {
+          "type": "object",
+          "description": "Laboratory investigations"
+        },
+        "ultrasound": {
+          "type": "object",
+          "description": "Ultrasonographical evaluation"
+        },
+        "endoscopy": {
+          "type": "object",
+          "description": "UGI endoscopic evaluation results"
+        },
+        "scores": {
+          "type": "object",
+          "description": "Calculated severity scores (Child-Pugh, MELD-Na)"
+        }
+      },
+      "required": ["id", "userId", "createdAt", "updatedAt", "demographics"]
+    }
+  },
+  "firestore": {
+    "patients/{patientId}": {
+      "schema": "PatientProfile",
+      "description": "Secure patient registry records"
+    }
+  }
+}

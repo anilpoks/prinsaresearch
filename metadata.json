@@ -1,0 +1,6 @@
+{
+  "name": "CLD Portal Vein Research Registry",
+  "description": "Clinical Research Registry for studying Portal Vein Diameter and its association with esophageal varices in Chronic Liver Disease patients, equipped with automated calculators (Child-Pugh, MELD-Na, Eligibility) and statistical analysis (Independent t-test, ROC curve analysis, and SPSS exporter).",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

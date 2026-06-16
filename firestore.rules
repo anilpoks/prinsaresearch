@@ -1,0 +1,94 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Global Safety Net
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Helper functions
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isEmailVerified() {
+      return isSignedIn() && (request.auth.token.email_verified == true || request.auth.token.email == "anilpokhrel@gmail.com");
+    }
+
+    function getUserRole() {
+      let path = /databases/$(database)/documents/roles/$(request.auth.uid);
+      return exists(path) ? get(path).data.role : null;
+    }
+
+    function isAdmin() {
+      return isSignedIn() && (
+        request.auth.token.email == "anilpokhrel@gmail.com"
+        || (isEmailVerified() && getUserRole() == "admin")
+      );
+    }
+
+    function isManager() {
+      return isEmailVerified() && (
+        getUserRole() == "manager"
+      );
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    function isValidPatient(data) {
+      return data.keys().hasAll(['id', 'userId', 'createdAt', 'updatedAt', 'demographics'])
+        && data.keys().size() <= 12
+        && data.id is string && data.id.size() <= 128
+        && data.userId is string && data.userId.size() <= 128
+        && data.demographics is map
+        && (!data.keys().hasAny(['isDraft']) || data.isDraft is bool);
+    }
+
+    // Match roles collection
+    match /roles/{userId} {
+      allow list: if isAdmin();
+      allow get: if isSignedIn() && (request.auth.uid == userId || isAdmin());
+      allow create: if isSignedIn() && (
+        isAdmin() || (
+          request.auth.uid == userId 
+          && incoming().role == 'manager' 
+          && incoming().id == userId
+          && incoming().email == request.auth.token.email
+        )
+      );
+      allow update, delete: if isAdmin();
+    }
+
+    // Match patients collection
+    match /patients/{patientId} {
+      // Both Manager and Admin can read
+      allow read: if isAdmin() || isManager();
+
+      // Both Manager and Admin can create
+      allow create: if (isAdmin() || isManager()) && isValidId(patientId)
+        && isValidPatient(incoming())
+        && incoming().createdAt == request.time
+        && incoming().updatedAt == request.time;
+
+      // Admin can update/delete
+      allow update: if isAdmin()
+        && isValidId(patientId)
+        && isValidPatient(incoming())
+        && incoming().createdAt == existing().createdAt
+        && incoming().updatedAt == request.time;
+        
+      allow delete: if isAdmin() && isValidId(patientId);
+    }
+  }
+}
