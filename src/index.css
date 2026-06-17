@@ -7,17 +7,31 @@
 }
 
 @media print {
-  .no-print {
+  .no-print, .screen-only, header, nav, button, input, select, textarea, [role="tablist"] {
     display: none !important;
   }
 
-  /* Ensure the patient detail modal content prints clearly */
-  body, html {
+  body, html, main, #root {
     background: white !important;
     color: black !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    width: 100% !important;
+    max-width: none !important;
+    box-shadow: none !important;
+    overflow: visible !important;
   }
 
-  /* Expose patient audit container and hide all background overlays */
+  .print-only {
+    display: block !important;
+  }
+
+  .page-break {
+    page-break-after: always !important;
+    break-after: page !important;
+  }
+
+  /* Ensure the patient detail modal content prints clearly */
   #patient-audit-container {
     display: block !important;
     position: static !important;
@@ -31,12 +45,21 @@
     backdrop-filter: none !important;
   }
 
-  /* Ensure grid layout stacks in print for better readability */
-  .grid {
-    display: block !important;
+  /* Print optimizations for clinical charts and tables */
+  table {
+    page-break-inside: avoid !important;
   }
-  
-  .grid > div {
-    margin-bottom: 1rem !important;
+  tr {
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+  svg {
+    page-break-inside: avoid !important;
+  }
+}
+
+@media screen {
+  .print-only {
+    display: none !important;
   }
 }

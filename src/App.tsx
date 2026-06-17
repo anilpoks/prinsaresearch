@@ -10,6 +10,7 @@ import Dashboard from "./components/Dashboard";
 import PatientForm from "./components/PatientForm";
 import CohortList from "./components/CohortList";
 import Analysis from "./components/Analysis";
+import ThesisGenerator from "./components/ThesisGenerator";
 import { UserManagement } from "./components/UserManagement";
 import { 
   HeartPulse, 
@@ -63,7 +64,7 @@ testConnection();
 
 export default function App() {
   const [patients, setPatients] = useState<PatientProfile[]>([]);
-  const [activeTab, setActiveTab] = useState<"dashboard" | "cohort" | "analysis" | "form" | "settings">("dashboard");
+  const [activeTab, setActiveTab] = useState<"dashboard" | "cohort" | "analysis" | "thesis" | "form" | "settings">("dashboard");
   const [editingPatient, setEditingPatient] = useState<PatientProfile | null>(null);
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [userRole, setUserRole] = useState<"admin" | "manager" | null>(null);
@@ -436,6 +437,18 @@ export default function App() {
                 Objective Analysis
               </button>
               <button
+                id="main-nav-thesis"
+                onClick={() => setActiveTab("thesis")}
+                className={`px-3.5 py-2 rounded-lg flex items-center gap-1.5 transition-all cursor-pointer ${
+                  activeTab === "thesis"
+                    ? "bg-white text-blue-600 shadow-sm border border-slate-200/20"
+                    : "text-slate-500 hover:text-slate-800"
+                }`}
+              >
+                <Sparkles size={14} className="text-indigo-500" />
+                Thesis Generator
+              </button>
+              <button
                 onClick={() => setActiveTab("settings")}
                 className={`px-3.5 py-2 rounded-lg flex items-center gap-1.5 transition-all cursor-pointer ${
                   activeTab === "settings"
@@ -536,6 +549,13 @@ export default function App() {
 
         {activeTab === "analysis" && (
           <Analysis 
+            patients={patients}
+            analytics={analytics}
+          />
+        )}
+
+        {activeTab === "thesis" && (
+          <ThesisGenerator 
             patients={patients}
             analytics={analytics}
           />
